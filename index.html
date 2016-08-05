@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<style>
+    html,body{
+        margin:0;
+        padding:0;
+    }
+    .bg{
+        position: absolute;
+    }
+	.box{
+		width:50px;
+		height:50px;
+		border-radius: 50%;
+		background: purple;
+		position: absolute;
+		top:30px;
+		left: 30px;
+		cursor: pointer;
+		z-index: 9999;
+	}
+</style>
+<body>
+    <div class="box" id='box'></div>
+<script>
+    var ball=function(w,h,x,y,c){
+        this.width=w;
+        this.height=h;
+        this.x=x;
+        this.y=y;
+        this.color=c;
+        this.intn();
+        this.move();
+		this.box=document.getElementById('box')
+    }
+    ball.prototype={
+       intn:function(){
+           this.ele=document.createElement('div');
+           this.ele.className='bg';
+           document.body.appendChild(this.ele);
+       },
+		refresh:function(){
+			this.ele.style.cssText='left:'+this.x+'px;top:'+this.y+'px;width:'+this.width+'px;\
+						height:'+this.height+'px;background:'+this.color+';border-radius:50%';
+		},
+        move:function(){
+            var that=this;
+			var ranX=this.random(3,-3);
+			var ranY=this.random(3,-3);
+            setInterval(function(){
+                that.x += ranX;
+                that.y += ranY;
+				var maxW=document.documentElement.clientWidth;
+				var maxH=document.documentElement.clientHeight;
+				if(that.x<=0){ranX=-ranX};
+				if(that.x>=maxW-that.width-5){ranX=-ranX};
+				if(that.y<=0){ranY=-ranY};
+				if(that.y>=maxH-that.height-5){ranY=-ranY};
+				that.refresh();
+				var oxx = (that.ele.offsetLeft+that.ele.offsetWidth/2) - (that.box.offsetLeft+that.box.offsetWidth/2);
+				var oyy = (that.ele.offsetTop+that.ele.offsetHeight/2) - (that.box.offsetTop+that.box.offsetHeight/2);
+				var ozz = that.ele.offsetHeight/2 + that.box.offsetHeight/2;
+				if(Math.pow(oxx,2)+Math.pow(oyy,2)<=Math.pow(ozz,2)){
+					alert("游戏结束")
+					location.reload()
+				}
+            },10)
+        },
+		random:function(max,min){
+			return Math.floor(Math.random(i)*(max-min))+min+1;
+		}
+    }
+	function ranDom(max,min){
+		return Math.floor(Math.random(i)*(max-min))+min+1;
+	}
+  	function createBall(){
+		 for(var i=0;i<=30;i++){
+		   hi=Math.floor(Math.random()*80+1)
+		   new ball(hi,hi,300,300,rancolor())
+	   }	
+	}
+	function rancolor(){
+		var arr=[0,1,2,3,4,5,6,7,8,9,"a","b","c","d","e","f"];
+		for(var j=0;j<arr.length;j++){
+			var a=Math.floor(Math.random(i)*15+1)
+			var b=Math.floor(Math.random(i)*15+1)
+			var c=Math.floor(Math.random(i)*15+1)
+			var color="#"+arr[a]+arr[b]+arr[c];
+			return color;
+		}
+	}
+	/*移动事件*/
+	function dage(){
+		this.box=document.getElementById('box');
+		this.intn();
+	}
+	dage.prototype={
+		intn:function(){
+			this.down();
+			this.up();
+			
+		},
+		down:function(){
+			var that=this;
+			this.box.onmousedown=function(e){
+				that.divX=e.pageX-that.box.offsetLeft;
+				that.divY=e.pageY-that.box.offsetTop;
+				that.move();
+			}
+				
+		},
+		move:function(){
+			var that=this;
+			document.onmousemove=function(e){
+				var leftX=e.pageX-that.divX;
+				var topY=e.pageY-that.divY;
+				var winX=document.documentElement.clientWidth-that.box.offsetWidth;
+				var winH=document.documentElement.clientHeight-that.box.offsetHeight;
+				if(leftX<=0) leftX=0;
+				if(topY<=0) topY=0;
+				if(leftX>=winX) leftX=winX;
+				if(topY>=winH) topY=winH;
+				that.box.style.left=leftX+'px';
+				that.box.style.top=topY+'px';
+			}
+		},
+		up:function(){
+			document.onmouseup=function(){
+				document.onmousemove=null;
+			}
+		}
+	}
+	var dage=new dage();
+	  var i = 0;
+    document.addEventListener("keydown", function (e) {
+        if (i == 0) {
+            if (e.keyCode == 13 || e.keyCode == 32) {
+                createBall()
+            }
+        }
+        i++;
+    }, false)
+</script>
+</body>
+</html>
